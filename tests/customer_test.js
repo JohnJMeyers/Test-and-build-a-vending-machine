@@ -14,6 +14,7 @@ A customer should be able to buy an item, paying more than the item is worth (im
 A customer should not be able to buy items that are not in the machine, but instead get an error
 */
 
+
 describe('GET /api/customer/items - get a list of items', function(){
 
   it("allows a CUSTOMER to view a list of current items, quantities, and prices", function(done){
@@ -28,12 +29,9 @@ describe('GET /api/customer/items - get a list of items', function(){
 
 describe('POST /api/customer/items/:itemId/purchases - purchase an item', function(done){
 
-
-  // let money
   let snackGlobal
 
   beforeEach(function(done){
-
     const snack = new Snacks()
     snack.quantity = 10
     snack.description = "Doritos"
@@ -45,7 +43,6 @@ describe('POST /api/customer/items/:itemId/purchases - purchase an item', functi
       const money = new Money()
       money.balance = snack.price
       money.save()
-
 
       .then(function(money){
         money.purchases.push({
@@ -60,8 +57,7 @@ describe('POST /api/customer/items/:itemId/purchases - purchase an item', functi
   })
 
 
-
-  it("allows a customer to buy an item using money", function(done){
+  it("allows a CUSTOMER to buy an item using money", function(done){
     request(app)
     .post(`/api/customer/items/${snackGlobal._id}/purchases`)
     .send({
@@ -72,7 +68,8 @@ describe('POST /api/customer/items/:itemId/purchases - purchase an item', functi
     .end(done)
   })
 
-  it("allows a customer to over-pay for an item and receive correct change", function(done){
+
+  it("allows a CUSTOMER to over-pay for an item and receive correct change", function(done){
     request(app)
     .post(`/api/customer/items/${snackGlobal._id}/purchases`)
     .send({
@@ -86,18 +83,26 @@ describe('POST /api/customer/items/:itemId/purchases - purchase an item', functi
     .end(done)
   })
 
-  afterEach(function(done){
 
-  Snacks.deleteMany()
-  .then(function(){
-    Money.deleteMany()
-    .then(function(){
-      done()
+  it("prevents a CUSTOMER from buying items that are not in the vending machine", function(done){
+    request(app)
+    .post(`/api/customer/items/596bddee623b0b13f82a148c/purchases`)
+    .send({
+      moneySent: 100
     })
+    .expect(404)
+    .expect("Content-Type", "application/json; charset=utf-8")
+    .end(done)
   })
 
-})
 
-
-
+  afterEach(function(done){
+    Snacks.deleteMany()
+    .then(function(){
+      Money.deleteMany()
+      .then(function(){
+        done()
+      })
+    })
+  })
 })

@@ -36,6 +36,7 @@ router.get('/api/vendor/money', function(req,res){
 
 
 router.post('/api/vendor/items', function(req,res){
+  res.setHeader('Content-Type', 'application/json')
   let snack = new Snacks()
   snack.price = req.body.price
   snack.description = req.body.description
