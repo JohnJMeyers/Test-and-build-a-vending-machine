@@ -16,7 +16,7 @@ A vendor should be able to add a new item to the machine
 */
 
 
-describe('GET /api/vendor/purchases - get a list of all purchases with their item and date/time', function(done){
+describe('Tests vendors HTTP methods.', function(done){
 
   let snackGlobal
 
