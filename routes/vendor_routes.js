@@ -6,7 +6,6 @@ const Money = require('../models/money')
 
 
 router.get('/api/vendor/purchases', function(req, res){
-  // res.setHeader('Content-Type', 'application/json')
   Money.find()
   .then(function(money){
     let vendorsList = []
@@ -16,28 +15,70 @@ router.get('/api/vendor/purchases', function(req, res){
     return res.status(200).json({
       status: 'success',
       data: vendorsList
-
     })
-  })
-  .catch(function(errors){
-    console.log(errors)
   })
 })
 
 
 
+router.get('/api/vendor/money', function(req,res){
+  Money.find()
+  .then(function(money){
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        balance: money[0].balance
+      }
+    })
+  })
+})
 
-// router.get('/api/vendor/purchases', function(req, res){
-//   res.setHeader('Content-Type', 'application/json')
-// Money.find()
-// .then(function(money){
-//   return res.status(200).json({
-//     purchases: money[0].purchases
-//   })
-// })
-// .catch(function(errors){
-//   console.log(errors)
-// })
-// })
+
+
+router.post('/api/vendor/items', function(req,res){
+  let snack = new Snacks()
+  snack.price = req.body.price
+  snack.description = req.body.description
+  snack.quantity = req.body.quantity
+  snack.save()
+  .then(function(snack){
+    return res.status(200).json({
+      status: 'Successfully added ' + snack.description + ' to the vending machine.',
+      data: {
+        snack: snack
+      }
+    })
+  })
+})
+
+
+
+router.put('/api/vendor/items/:itemId', function(req,res){
+  Snacks.findOne({
+    _id: req.params.itemId
+  })
+  .then(function(snack){
+    if (req.body.quantity) {
+      snack.quantity = req.body.quantity
+      snack.save()
+    }
+    if (req.body.description) {
+      snack.description = req.body.description
+      snack.save()
+    }
+    if (req.body.price) {
+      snack.price = req.body.price
+      snack.save()
+    }
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          snack: snack
+        }
+      })
+  })
+})
+
+
 
 module.exports = router
